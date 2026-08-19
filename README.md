@@ -50,17 +50,17 @@ lib/
 
 ## 2인 브랜치 전략
 
-하루짜리 프로토타입은 `main`과 두 feature 브랜치만 사용합니다. `develop` 브랜치는 만들지 않습니다.
+하루짜리 프로토타입은 `main`과 두 개인 브랜치만 사용합니다. `develop` 브랜치는 만들지 않습니다.
 
 ```text
 main
-├── feature/search-flow  # 담당 A: 시작, 출발/도착, 시간/카테고리
-└── feature/course-flow  # 담당 B: 후보, 장소 상세, 코스 결과
+├── minchan  # 검색 흐름, 공통 UI, 전체 연결
+└── yeun     # 추천 후보, 장소 상세, 코스 결과
 ```
 
 1. 공통 골격을 `main`에 먼저 반영하고 두 브랜치를 만듭니다.
 2. 각 기능은 자기 `features/` 하위에서만 수정합니다.
-3. `app/router.dart`, `core/`, `models/`, `data/`는 충돌 위험이 높으므로 수정 전 상대에게 알립니다.
+3. `lib/app/app.dart`, `core/`, `models/`, `data/`는 충돌 위험이 높으므로 수정 전 상대에게 알립니다.
 4. 화면 연결은 `SearchCondition`, `CandidatePlace`, `CoursePlan` 계약을 사용합니다. 모델 필드 변경은 반드시 먼저 합의합니다.
 5. 기능 하나가 끝날 때마다 `main`으로 작은 단위로 병합하고, 병합 직후 Golden Path를 한 번 실행합니다.
 
@@ -68,9 +68,11 @@ main
 
 | 담당 | 범위 | 주 파일 |
 | --- | --- | --- |
-| A | 시작, 출발/도착, 남은 시간, 카테고리 | `features/search_flow/` |
-| B | 추천 후보, 장소 상세, 코스 결과 | `features/course_flow/` |
+| minchan | 시작, 출발/도착, 남은 시간, 카테고리, 전체 연결 | `features/search_flow/` |
+| yeun | 추천 후보, 장소 상세, 코스 결과 | `features/course_flow/` |
 | 공동 | 모델, mock 데이터, 라우팅, theme | 병합 전 합의 |
+
+상세한 실행 절차, 커밋 컨벤션, PR 체크리스트는 [협업 가이드](docs/COLLABORATION_GUIDE.md)를 확인합니다.
 
 ## 데모 데이터와 로직
 
