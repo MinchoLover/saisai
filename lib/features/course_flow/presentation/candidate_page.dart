@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/tour_map.dart';
+import '../../../core/widgets/place_image.dart';
 import '../../../data/tour_api_repository.dart';
 import '../../../models/candidate_place.dart';
 import '../../../models/search_condition.dart';
@@ -347,15 +348,13 @@ class _CandidateCard extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             child: Row(
               children: [
-                Container(
-                  width: 58,
-                  height: 58,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      color: AppTheme.mint,
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Text(place.imageEmoji,
-                      style: const TextStyle(fontSize: 29)),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: SizedBox(
+                    width: 58,
+                    height: 58,
+                    child: PlaceImage(place: place, emojiSize: 29),
+                  ),
                 ),
                 const SizedBox(width: 13),
                 Expanded(
@@ -386,7 +385,10 @@ class _CandidateCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Text('${place.category} · ★ ${place.rating}',
+                      Text(
+                          place.distanceMeters > 0
+                              ? '${place.category} · ${_distanceLabel(place.distanceMeters)}'
+                              : place.category,
                           style: const TextStyle(
                               color: AppTheme.muted, fontSize: 13)),
                       const SizedBox(height: 5),
@@ -412,4 +414,8 @@ class _CandidateCard extends StatelessWidget {
           ),
         ),
       );
+
+  String _distanceLabel(int meters) => meters < 1000
+      ? '${meters}m 거리'
+      : '${(meters / 1000).toStringAsFixed(1)}km 거리';
 }

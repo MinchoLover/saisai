@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/place_image.dart';
 import '../../../models/candidate_place.dart';
 import '../../../models/search_condition.dart';
 import '../../../services/course_planner.dart';
@@ -50,41 +51,41 @@ class PlaceDetailPage extends StatelessWidget {
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [Color(0xFFBDE5D4), Color(0xFFF2DDAE)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                        right: -24,
-                        top: 58,
-                        child: Icon(Icons.circle,
-                            size: 170,
-                            color: Colors.white.withValues(alpha: .3))),
-                    Center(
-                        child: Text(place.imageEmoji,
-                            style: const TextStyle(fontSize: 104))),
-                    Positioned(
-                      left: 20,
-                      bottom: 18,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 11, vertical: 7),
-                        decoration: BoxDecoration(
-                            color: AppTheme.ink.withValues(alpha: .82),
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Text(place.category,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800)),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  PlaceImage(place: place, emojiSize: 104),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.transparent, Color(0x66000000)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Positioned(
+                      right: -24,
+                      top: 58,
+                      child: Icon(Icons.circle,
+                          size: 170,
+                          color: Colors.white.withValues(alpha: .3))),
+                  Positioned(
+                    left: 20,
+                    bottom: 18,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 11, vertical: 7),
+                      decoration: BoxDecoration(
+                          color: AppTheme.ink.withValues(alpha: .82),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Text(place.category,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800)),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -104,11 +105,11 @@ class PlaceDetailPage extends StatelessWidget {
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: -.8)),
                       ),
-                      const Icon(Icons.star_rounded,
-                          color: Color(0xFFFFB000), size: 21),
-                      const SizedBox(width: 3),
-                      Text('${place.rating}',
-                          style: const TextStyle(fontWeight: FontWeight.w800)),
+                      if (place.distanceMeters > 0)
+                        Text(_distanceLabel(place.distanceMeters),
+                            style: const TextStyle(
+                                color: AppTheme.primary,
+                                fontWeight: FontWeight.w800)),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -159,18 +160,18 @@ class PlaceDetailPage extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 14),
-                  const _InfoRow(
-                      icon: Icons.schedule_rounded,
-                      title: '운영 시간',
-                      value: '매일 10:00 – 20:00'),
-                  const _InfoRow(
+                  _InfoRow(
                       icon: Icons.location_on_outlined,
                       title: '위치',
-                      value: '서울 중구 도심권'),
-                  const _InfoRow(
-                      icon: Icons.payments_outlined,
-                      title: '이용 요금',
-                      value: '무료 또는 현장 확인'),
+                      value:
+                          place.address.isEmpty ? '위치 정보 없음' : place.address),
+                  if (place.latitude != 0 && place.longitude != 0)
+                    _InfoRow(
+                      icon: Icons.map_outlined,
+                      title: '좌표',
+                      value:
+                          '${place.latitude.toStringAsFixed(5)}, ${place.longitude.toStringAsFixed(5)}',
+                    ),
                 ],
               ),
             ),
@@ -192,6 +193,10 @@ class PlaceDetailPage extends StatelessWidget {
       ),
     );
   }
+
+  String _distanceLabel(int meters) => meters < 1000
+      ? '${meters}m 거리'
+      : '${(meters / 1000).toStringAsFixed(1)}km 거리';
 }
 
 class _TimeStat extends StatelessWidget {
