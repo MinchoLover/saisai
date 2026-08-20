@@ -18,3 +18,5 @@ ios/Pods/
 .env
 .env.*
 !.env.example
+
+secrets.json
